@@ -15,7 +15,7 @@ namespace Uplift.DataAccess.Repository
         public Repository(DbContext context)
         {
             Context = context;
-            this.dbSet = context.Set<T>();
+            this.dbSet = Context.Set<T>();
         }
 
         public async Task Add(T entity)

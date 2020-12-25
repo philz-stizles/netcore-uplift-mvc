@@ -5,7 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Uplift.DataAccess.Repository;
 using Uplift.DataAccess;
+using Uplift.Models;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Uplift.Utility;
+using System;
 
 namespace Uplift
 {
@@ -21,12 +26,28 @@ namespace Uplift
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+                //.AddUserManager<User>();
+            // .AddDefaultUI(UIFramework.Bootstrap4);
+            services.ConfigureApplicationCookie(options => {
+                options.LoginPath = $"/Identity/Account/Login";
+                options.LogoutPath = $"/Identity/Account/Logout";
+                options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+            });
+            services.AddSingleton<IEmailSender, EmailSender>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddMvc();
             services.AddRazorPages();
         }
@@ -49,6 +70,8 @@ namespace Uplift
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseSession();
+
             app.UseRouting();
 
             app.UseAuthentication();
@@ -59,11 +82,7 @@ namespace Uplift
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
-
-                // endpoints.MapControllerRoute(
-                //     name: "default",
-                //     pattern: "{controller=Home}/{action=Index}/{id?}");
-
+                    
                 endpoints.MapRazorPages();
             });
         }

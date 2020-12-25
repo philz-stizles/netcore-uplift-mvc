@@ -1,9 +1,14 @@
-﻿<!DOCTYPE html>
+﻿@using Uplift.Utility
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using Newtonsoft.Json
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Uplift</title>
+    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
     <link rel="stylesheet" href="~/css/lib/bootstrap/bootswatch/united/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
@@ -24,11 +29,37 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="/Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="/Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Content Management
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Category</a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Frequency" asp-action="Index">Frequency</a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Service" asp-action="Index">Service</a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="User" asp-action="Index">User</a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Order" asp-action="Index">Order</a>
+                            </div>
+                        </li>
+
+                        @if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Session.GetString(SD.SessionCart)))
+                        {
+                            <li class="nav-item">
+                                <a asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                    @{
+                                        var sessionList = JsonConvert.DeserializeObject<List<int>>(HttpContextAccessor.HttpContext.Session.GetString(SD.SessionCart));
+                                        var count = sessionList.Count;
+
+                                    }
+                                    <i class="fas fa-shopping-cart"></i>&nbsp; (@count)
+                                </a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

@@ -1,8 +1,40 @@
-﻿@{
+﻿@model Uplift.Models.ViewModels.HomeViewModel
+@using Microsoft.AspNetCore.Hosting
+@{
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container">
+    @foreach(var category in Model.Categories)
+    {
+        @if(Model.Services.Any(s => s.CategoryId == category.Id)){
+            <div class="row my-4">
+                <h3 class=""><b>@category.Name</b></h3>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-3">
+                @foreach(var service in Model.Services.Where(s => s.CategoryId == category.Id))
+                {
+                    if(Model.Services.Any(s => s.CategoryId == category.Id)){
+                        <div class="col mb-4">
+                            <div class="card">
+                                <img src="@service.ImageUrl" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <h5 class="card-title">@service.Name</h5>
+                                    <p class="card-text">@service.Description</p>
+                                    <div class="d-flex justify-content-between">
+                                        <div class="pr-1 ">Price per Service</div>
+                                        <div class="pl-1">@service.Price</div>
+                                    </div>
+                                    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                </div>
+                                <a class="btn btn-success" style="border-radius: 0;" asp-action="Details" asp-route-id="@service.Id">Details</a>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        }
+    }
+
 </div>

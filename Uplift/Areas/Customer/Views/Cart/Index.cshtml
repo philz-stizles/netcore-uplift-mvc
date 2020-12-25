@@ -1,0 +1,69 @@
+﻿@model Uplift.Models.ViewModels.CartViewModel
+@{
+    ViewData["Title"] = "Home page";
+    var totalAmount = 0.0;
+}
+
+<div class="container">
+    <div class="card">
+        <div class="card-header container bg-dark">
+            <div class="row">
+                <div class="col-12 d-none d-md-block col-md-6 text-white"><i class="fas fa-shopping-cart"></i> &nbsp; Shopping Cart</div>
+                <div class="col-12 offset-md-2 col-md-4 text-right">
+                    <a asp-action="Index" class="btn btn-outline-secondary form-control">Continue Shopping</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (Model.Services.Count() > 0)
+            {
+                totalAmount = Model.Services.Sum(s => s.Price);
+
+                <ul class="list-group list-group-flush">
+                    @foreach (var service in Model.Services)
+                    {
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="d-none d-md-block col-md-2">
+                                    <img width="120" src="@service.ImageUrl" alt="@service.Name" class="rounded">
+                                </div>
+                                <div class="col-12 col-md-5">
+                                    <h5><strong>@service.Name</strong></h5>
+                                    <h5><small>$@service.Price per Service</small></h5>
+                                    <h5 class="text-secondary"><small>@service.Frequency.Name</small></h5>
+                                </div>
+                                <div class="col-12 col-md-5">
+                                    <div class="row">
+                                        <div class="col-6 text-md-right">
+                                            <p class="card-text text-primary">$@service.Price</p>
+                                        </div>
+                                        <div class="col-6 text-md-right">
+                                            <a asp-action="RemoveFromCart" asp-route-cartItemId="@service.Id" class="btn btn-primary text-white"><i class="far fa-trash-alt"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>  
+            }
+            else
+            {
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <h4>No items in cart</h4>
+                    </div>
+                </div>
+            }
+            <hr />
+            <div class="container">
+                <div class="row justify-content-end">
+                    <h5 class="text-success">Total (USD): &nbsp; @totalAmount</h5>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-right">
+            <a asp-action="Summary" class="btn btn-success">Summary</a>
+        </div>
+    </div>
+</div>

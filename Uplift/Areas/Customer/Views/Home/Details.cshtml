@@ -1,0 +1,59 @@
+﻿@model Uplift.Models.Service
+@using Uplift.Utility
+@{
+    ViewData["Title"] = "Home page";
+}
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using Newtonsoft.Json
+<div class="container">
+    <div class="card">
+        <div class="card-header bg-light text-light row">
+            <div class="col-12 col-md-6"><h2 class="text-primary">@Model.Name</h2></div>
+            <div class="col-12 col-md-6 text-md-right"><h2 class="text-muted">Total: @((Model.Price * Model.Frequency.FrequencyCount))</h2></div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-lg-8">
+                    <h3 class="card-text">Price per Service: @Model.Price</h3>
+                    <h4 class="card-text">@Model.Frequency.Name</h4>
+                    <p class="text-secondary">@Html.Raw(Model.Description)</p>
+                    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <img style="width:100%; height: auto" src="@Model.ImageUrl" />
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <a class="btn btn-success btn-large form-control" asp-action="Index">Back to List</a>
+                </div>
+                <div class="col-12 col-md-6">
+                    @{
+                        var addedToCart = false;
+                        var sessionCart = HttpContextAccessor.HttpContext.Session.GetString(SD.SessionCart);
+                        if (!string.IsNullOrEmpty(sessionCart)) {
+                            var sessionList = JsonConvert.DeserializeObject<List<int>>(sessionCart);
+                            if (sessionList.Contains(Model.Id))
+                            {
+                                addedToCart = true;
+                            }
+
+                        }
+                    }
+
+                    @if (!addedToCart)
+                    {
+                        <a class="btn btn-primary btn-lg form-control" asp-action="AddToCart" asp-route-serviceId="@Model.Id">Add to Cart</a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary btn-lg btn-square form-control disabled">Already in Cart</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
