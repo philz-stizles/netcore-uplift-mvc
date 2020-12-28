@@ -6,9 +6,8 @@ using Microsoft.AspNetCore.Identity;
 namespace Uplift.Models
 {
     [Table("ApplicationUsers")]
-    public class User : IdentityUser
+    public class ApplicationUser : IdentityUser
     {
-        [Required]
         public string Name { get; set; }
 
         public virtual IEnumerable<Address> Address { get; set; }

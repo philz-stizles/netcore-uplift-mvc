@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Uplift.Models;
-using Uplift.Utility;
 
 namespace Uplift.Areas.Identity.Pages.Account
 {
@@ -23,19 +22,16 @@ namespace Uplift.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
             _userManager = userManager;
-            _roleManager = roleManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
@@ -56,9 +52,8 @@ namespace Uplift.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
+            [Display(Name = "Name")]
             public string Name { get; set; }
-
-            public string PhoneNumber { get; set; }
 
             [Required]
             public string Street { get; set; }
@@ -96,50 +91,22 @@ namespace Uplift.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var newAddress = new Address
-                {
-                    Street = Input.Street,
-                    State = Input.State,
-                    City = Input.City,
-                    PostalCode = Input.PostalCode
-                };
-
-                var user = new ApplicationUser { 
-                    UserName = Input.Email, 
-                    Email = Input.Email, 
-                    Name = Input.Name,
-                    Address = new List<Address>
-                    {
-                        newAddress
-                    }
-                };
-
+                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
-                    string role = Request.Form["rdUserRoles"].ToString();
-
-                    if (role == SD.Admin)
-                    {
-                        await _userManager.AddToRoleAsync(user, SD.Admin);
-                    }
-                    else 
-                    {
-                        await _userManager.AddToRoleAsync(user, SD.Manager);
-                    }
-
                     _logger.LogInformation("User created a new account with password.");
 
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    //var callbackUrl = Url.Page(
-                    //    "/Account/ConfirmEmail",
-                    //    pageHandler: null,
-                    //    values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
-                    //    protocol: Request.Scheme);
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    var callbackUrl = Url.Page(
+                        "/Account/ConfirmEmail",
+                        pageHandler: null,
+                        values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
+                        protocol: Request.Scheme);
 
-                    //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                    //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -147,7 +114,7 @@ namespace Uplift.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        // await _signInManager.SignInAsync(user, isPersistent: false);
+                        await _signInManager.SignInAsync(user, isPersistent: false);
                         return LocalRedirect(returnUrl);
                     }
                 }

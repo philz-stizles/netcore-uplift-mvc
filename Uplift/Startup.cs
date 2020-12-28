@@ -11,6 +11,7 @@ using Uplift.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Uplift.Utility;
 using System;
+using Uplift.DataAccess.Initializer;
 
 namespace Uplift
 {
@@ -36,10 +37,10 @@ namespace Uplift
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddIdentity<User, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-                //.AddUserManager<User>();
+                // .AddSignInManager<ApplicationUser>();
             // .AddDefaultUI(UIFramework.Bootstrap4);
             services.ConfigureApplicationCookie(options => {
                 options.LoginPath = $"/Identity/Account/Login";
@@ -48,12 +49,13 @@ namespace Uplift
             });
             services.AddSingleton<IEmailSender, EmailSender>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddMvc();
             services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDbInitializer dbInit)
         {
             if (env.IsDevelopment())
             {
@@ -73,6 +75,8 @@ namespace Uplift
             app.UseSession();
 
             app.UseRouting();
+
+            dbInit.Initialize();
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -6,6 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Admin\Controllers\OrderController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Areas\Admin\Controllers\OrderController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
   </ItemGroup>
 
@@ -20,9 +28,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.1" />
-    <!-- <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Composition" Version="1.0.30" ExcludeAssets="All" />
-    <PackageReference Include="System.Composition" Version="1.0.31" /> -->
   </ItemGroup>
 
   <ItemGroup>

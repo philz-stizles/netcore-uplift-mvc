@@ -9,6 +9,7 @@ namespace Uplift.DataAccess.Repository
         IFrequencyRepository Frequency { get; }
         IServiceRepository Service { get; }
         IUserRepository User { get; }
+        IOrderRepository Order { get; }
         Task SaveAsync();
     }
 }

@@ -26,7 +26,7 @@ namespace Uplift.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -65,6 +65,20 @@ namespace Uplift.DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FileUploads",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    FileData = table.Column<byte[]>(type: "BLOB", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FileUploads", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -116,8 +130,9 @@ namespace Uplift.DataAccess.Migrations
                     Street = table.Column<string>(type: "TEXT", nullable: true),
                     City = table.Column<string>(type: "TEXT", nullable: true),
                     State = table.Column<string>(type: "TEXT", nullable: true),
+                    Country = table.Column<string>(type: "TEXT", nullable: true),
                     PostalCode = table.Column<string>(type: "TEXT", nullable: true),
-                    UserId = table.Column<string>(type: "TEXT", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "TEXT", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreatedBy = table.Column<string>(type: "TEXT", nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -128,8 +143,8 @@ namespace Uplift.DataAccess.Migrations
                 {
                     table.PrimaryKey("PK_Address", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Address_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Address_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -221,6 +236,52 @@ namespace Uplift.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Customer",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Phone = table.Column<string>(type: "TEXT", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    AddressId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customer", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Customer_Address_AddressId",
+                        column: x => x.AddressId,
+                        principalTable: "Address",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Status = table.Column<string>(type: "TEXT", nullable: true),
+                    Comment = table.Column<string>(type: "TEXT", nullable: true),
+                    totalItems = table.Column<int>(type: "INTEGER", nullable: false),
+                    totalPrice = table.Column<double>(type: "REAL", nullable: false),
+                    OrderedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CustomerDetailId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_Customer_CustomerDetailId",
+                        column: x => x.CustomerDetailId,
+                        principalTable: "Customer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Services",
                 columns: table => new
                 {
@@ -232,6 +293,7 @@ namespace Uplift.DataAccess.Migrations
                     ImageUrl = table.Column<string>(type: "TEXT", nullable: true),
                     CategoryId = table.Column<int>(type: "INTEGER", nullable: false),
                     FrequencyId = table.Column<int>(type: "INTEGER", nullable: false),
+                    OrderId = table.Column<int>(type: "INTEGER", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreatedBy = table.Column<string>(type: "TEXT", nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -253,12 +315,18 @@ namespace Uplift.DataAccess.Migrations
                         principalTable: "Frequencies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Services_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Address_UserId",
+                name: "IX_Address_ApplicationUserId",
                 table: "Address",
-                column: "UserId");
+                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -298,6 +366,16 @@ namespace Uplift.DataAccess.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Customer_AddressId",
+                table: "Customer",
+                column: "AddressId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_CustomerDetailId",
+                table: "Orders",
+                column: "CustomerDetailId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Services_CategoryId",
                 table: "Services",
                 column: "CategoryId");
@@ -306,13 +384,15 @@ namespace Uplift.DataAccess.Migrations
                 name: "IX_Services_FrequencyId",
                 table: "Services",
                 column: "FrequencyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Services_OrderId",
+                table: "Services",
+                column: "OrderId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Address");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -329,19 +409,31 @@ namespace Uplift.DataAccess.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "FileUploads");
+
+            migrationBuilder.DropTable(
                 name: "Services");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Frequencies");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "Customer");
+
+            migrationBuilder.DropTable(
+                name: "Address");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

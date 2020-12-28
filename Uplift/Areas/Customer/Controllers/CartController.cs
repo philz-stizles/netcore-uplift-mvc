@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -14,12 +15,27 @@ namespace Uplift.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        private CartViewModel CartVM;
-        private CartSummaryViewModel CartSummaryVM;
+
+        [BindProperty]
+        private CartVM CartVM { get; set; }
+
+        [BindProperty]
+        private CartSummaryVM CartSummaryVM { get; set; }
 
         public CartController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+
+            CartVM = new CartVM()
+            {
+                Services = new List<Service>()
+            };
+
+            CartSummaryVM = new CartSummaryVM()
+            {
+                CustomerDetails = new Uplift.Models.Customer(),
+                Services = new List<Service>()
+            };
         }
 
         public async Task<IActionResult> Index()
@@ -33,14 +49,9 @@ namespace Uplift.Areas.Customer.Controllers
                 foreach (var id in cartItems)
                 {
                     var service = await _unitOfWork.Service.Get(filter: s => s.Id == id, includes: "Frequency");
-                    listOfItems.Add(service);
+                    CartVM.Services.Add(service);
                 }
             }
-
-            CartVM = new CartViewModel()
-            {
-                Services = listOfItems
-            };
 
             return View(CartVM);
         }
@@ -67,16 +78,46 @@ namespace Uplift.Areas.Customer.Controllers
                 foreach (var id in cartItems)
                 {
                     var service = await _unitOfWork.Service.Get(filter: s => s.Id == id, includes: "Frequency");
-                    listOfItems.Add(service);
+                    CartSummaryVM.Services.Add(service);
                 }
             }
 
-            CartSummaryVM = new CartSummaryViewModel()
+            return View(CartSummaryVM);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Summary")]
+        public async Task<IActionResult> SummaryPost(CartSummaryVM vm)
+        {
+            var listOfItems = new List<Service>();
+            var sessionCart = HttpContext.Session.GetString(SD.SessionCart);
+            if (!string.IsNullOrEmpty(sessionCart))
             {
-                Services = listOfItems
+                var cartItems = JsonConvert.DeserializeObject<List<int>>(sessionCart);
+
+                foreach (var id in cartItems)
+                {
+                    var service = await _unitOfWork.Service.Get(filter: s => s.Id == id, includes: "Frequency");
+                    CartSummaryVM.Services.Add(service);
+                }
+            }
+
+            if (!ModelState.IsValid) return View();
+
+            var newOrder = new Order
+            { 
+                CustomerDetail = vm.CustomerDetails,
+                totalItems = listOfItems.Count,
+                Items = listOfItems,
+                OrderedAt = DateTime.Now
             };
 
-            return View(CartSummaryVM);
+            // _unitOfWork.Order.Add();
+
+            HttpContext.Session.SetString(SD.SessionCart, JsonConvert.SerializeObject(new List<int>()));
+
+            return RedirectToAction("OrderConfirmation", "Cart", new { });
         }
     }
 }

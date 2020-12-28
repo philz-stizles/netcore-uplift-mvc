@@ -9,7 +9,7 @@ using Uplift.DataAccess;
 namespace Uplift.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20201223031547_InitialMigration")]
+    [Migration("20201227195159_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -152,7 +152,13 @@ namespace Uplift.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("City")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Country")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
@@ -179,136 +185,14 @@ namespace Uplift.DataAccess.Migrations
                     b.Property<string>("Street")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Address");
                 });
 
-            modelBuilder.Entity("Uplift.Models.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("IsDeleted")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("Uplift.Models.Frequency", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("FrequencyCount")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("IsDeleted")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Frequencies");
-                });
-
-            modelBuilder.Entity("Uplift.Models.Service", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("FrequencyId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("IsDeleted")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("REAL");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("FrequencyId");
-
-                    b.ToTable("Services");
-                });
-
-            modelBuilder.Entity("Uplift.Models.User", b =>
+            modelBuilder.Entity("Uplift.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -334,7 +218,6 @@ namespace Uplift.DataAccess.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedEmail")
@@ -376,6 +259,207 @@ namespace Uplift.DataAccess.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("Uplift.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("IsDeleted")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("Uplift.Models.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("AddressId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
+
+                    b.ToTable("Customer");
+                });
+
+            modelBuilder.Entity("Uplift.Models.FileUpload", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte[]>("FileData")
+                        .IsRequired()
+                        .HasColumnType("BLOB");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FileUploads");
+                });
+
+            modelBuilder.Entity("Uplift.Models.Frequency", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("FrequencyCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("IsDeleted")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Frequencies");
+                });
+
+            modelBuilder.Entity("Uplift.Models.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("CustomerDetailId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("OrderedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("totalItems")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("totalPrice")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerDetailId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Uplift.Models.Service", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("FrequencyId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("IsDeleted")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("FrequencyId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("Services");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -387,7 +471,7 @@ namespace Uplift.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Uplift.Models.User", null)
+                    b.HasOne("Uplift.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -396,7 +480,7 @@ namespace Uplift.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Uplift.Models.User", null)
+                    b.HasOne("Uplift.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -411,7 +495,7 @@ namespace Uplift.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Uplift.Models.User", null)
+                    b.HasOne("Uplift.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -420,7 +504,7 @@ namespace Uplift.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Uplift.Models.User", null)
+                    b.HasOne("Uplift.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -429,9 +513,29 @@ namespace Uplift.DataAccess.Migrations
 
             modelBuilder.Entity("Uplift.Models.Address", b =>
                 {
-                    b.HasOne("Uplift.Models.User", null)
+                    b.HasOne("Uplift.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Address")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("Uplift.Models.Customer", b =>
+                {
+                    b.HasOne("Uplift.Models.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId");
+
+                    b.Navigation("Address");
+                });
+
+            modelBuilder.Entity("Uplift.Models.Order", b =>
+                {
+                    b.HasOne("Uplift.Models.Customer", "CustomerDetail")
+                        .WithMany()
+                        .HasForeignKey("CustomerDetailId");
+
+                    b.Navigation("CustomerDetail");
                 });
 
             modelBuilder.Entity("Uplift.Models.Service", b =>
@@ -448,14 +552,23 @@ namespace Uplift.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Uplift.Models.Order", null)
+                        .WithMany("Items")
+                        .HasForeignKey("OrderId");
+
                     b.Navigation("Category");
 
                     b.Navigation("Frequency");
                 });
 
-            modelBuilder.Entity("Uplift.Models.User", b =>
+            modelBuilder.Entity("Uplift.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Address");
+                });
+
+            modelBuilder.Entity("Uplift.Models.Order", b =>
+                {
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

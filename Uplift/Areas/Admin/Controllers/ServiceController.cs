@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Uplift.DataAccess.Repository;
@@ -10,6 +11,7 @@ using Uplift.Models.ViewModels;
 namespace Uplift.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize]
     public class ServiceController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -65,19 +67,24 @@ namespace Uplift.Areas.Admin.Controllers
 
             if (service.Id == 0)
             {
-                var guid = Guid.NewGuid().ToString();
-                var extension = Path.GetExtension(files[0].FileName);
-                var fileFullPath = Path.Combine(_env.WebRootPath, "images", "services", $"{guid}{extension}");
-                using(var fileStream = new FileStream(fileFullPath, FileMode.Create)){
-                    await files[0].CopyToAsync(fileStream);
+                if(files != null && files.Count > 0)
+                {
+                    var guid = Guid.NewGuid().ToString();
+                    var extension = Path.GetExtension(files[0].FileName);
+                    var fileFullPath = Path.Combine(_env.WebRootPath, "images", "services", $"{guid}{extension}");
+                    
+                    using(var fileStream = new FileStream(fileFullPath, FileMode.Create)){
+                        await files[0].CopyToAsync(fileStream);
+                    }
+
+                    service.ImageUrl = $"\\images\\services\\{guid}{extension}";
                 }
-                service.ImageUrl = $"\\images\\services\\{guid}{extension}";
                 await _unitOfWork.Service.Add(service);
             }
             else
             {
                 var existingService = await _unitOfWork.Service.Get(service.Id);
-                if(files.Count > 0)
+                if(files != null && files.Count > 0)
                 {
                     var existingImageLocation = Path.Combine(_env.WebRootPath, existingService.ImageUrl.TrimStart('\\'));
                     if(System.IO.File.Exists(existingImageLocation))

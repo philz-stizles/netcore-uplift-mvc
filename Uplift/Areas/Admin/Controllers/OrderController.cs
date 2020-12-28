@@ -6,6 +6,7 @@ using Uplift.Models;
 namespace Uplift.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize]
     public class OrderController: Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -51,6 +52,18 @@ namespace Uplift.Areas.Admin.Controllers
         #region API CALLS
         [HttpGet]
         public async Task<IActionResult> GetAll() 
+        {
+            return Json(new { data = await _unitOfWork.User.GetAll() });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPending()
+        {
+            return Json(new { data = await _unitOfWork.User.GetAll() });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllApproved()
         {
             return Json(new { data = await _unitOfWork.User.GetAll() });
         }

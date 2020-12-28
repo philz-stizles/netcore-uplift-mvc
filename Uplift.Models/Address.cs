@@ -13,5 +13,7 @@ namespace Uplift.Models
         public string Country { get; set; }
         
         public string PostalCode { get; set; }
+        public string ApplicationUserId { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
     }
 }

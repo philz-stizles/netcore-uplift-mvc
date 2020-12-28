@@ -8,7 +8,7 @@ using Uplift.Models;
 
 namespace Uplift.DataAccess.Repository
 {
-    public class UserRepository : Repository<User>, IUserRepository
+    public class UserRepository : Repository<ApplicationUser>, IUserRepository
     {
         private readonly ApplicationDbContext _db;
         public UserRepository(ApplicationDbContext db): base(db)
@@ -16,14 +16,14 @@ namespace Uplift.DataAccess.Repository
             _db = db;
         }
 
-        public async Task LockUser(string id)
+        public async Task UnLockUser(string id)
         {
             var target = await _db.AppUsers.FirstOrDefaultAsync(c => c.Id == id);
             target.LockoutEnd = DateTime.Now;
             _db.SaveChanges();
         }
 
-        public async Task UnLockUser(string id)
+        public async Task LockUser(string id)
         {
             var target = await _db.AppUsers.FirstOrDefaultAsync(c => c.Id == id);
             target.LockoutEnd = DateTime.Now.AddYears(1000);

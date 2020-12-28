@@ -9,6 +9,7 @@ namespace Uplift.DataAccess.Repository
         public IFrequencyRepository Frequency { get; private set; }
         public IServiceRepository Service { get; private set; }
         public IUserRepository User { get; private set; }
+        public IOrderRepository Order { get; private set; }
 
         public UnitOfWork(ApplicationDbContext db)
         {
@@ -17,6 +18,7 @@ namespace Uplift.DataAccess.Repository
             Frequency = new FrequencyRepository(_db);
             Service = new ServiceRepository(_db);
             User = new UserRepository(_db);
+            Order = new OrderRepository(_db);
         }
 
         public void Dispose()

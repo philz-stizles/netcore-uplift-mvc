@@ -3,7 +3,7 @@ using Uplift.Models;
 
 namespace Uplift.DataAccess.Repository
 {
-    public interface IUserRepository: IRepository<User>
+    public interface IUserRepository: IRepository<ApplicationUser>
     {
         Task LockUser(string id);
         Task UnLockUser(string id);
