@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -63,6 +65,8 @@ namespace Uplift.Areas.Admin.Controllers
                 return View(ServiceVM);
             }
 
+            var claimsIdentity = (ClaimsIdentity)this.User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             var files = HttpContext.Request.Form.Files;
 
             if (service.Id == 0)
@@ -77,8 +81,10 @@ namespace Uplift.Areas.Admin.Controllers
                         await files[0].CopyToAsync(fileStream);
                     }
 
-                    service.ImageUrl = $"\\images\\services\\{guid}{extension}";
+                    service.ImageUrl = @"\images\services\" + guid + extension;
                 }
+                service.CreatedAt = DateTime.Now;
+                service.CreatedBy = userId;
                 await _unitOfWork.Service.Add(service);
             }
             else
@@ -98,12 +104,15 @@ namespace Uplift.Areas.Admin.Controllers
                     using(var fileStream = new FileStream(fileFullPath, FileMode.Create)){
                         await files[0].CopyToAsync(fileStream);
                     }
-                    service.ImageUrl = $"\\images\\services\\{guid}{extension}";
+                    service.ImageUrl = @"\images\services\" + guid + extension;
                 }
                 else
                 {
                     service.ImageUrl = existingService.ImageUrl;
                 }
+
+                service.ModifiedAt = DateTime.Now;
+                service.ModifiedBy = userId;
                 await _unitOfWork.Service.Update(service);
             }
 
@@ -117,7 +126,9 @@ namespace Uplift.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Json(new { data = await _unitOfWork.Service.GetAll(includes: "Category,Frequency") });
+            return Json(new { 
+                data = await _unitOfWork.Service.GetAll(includes: "Category,Frequency", orderBy: s => s.OrderByDescending(os => os.CreatedAt)) 
+            });
         }
 
         [HttpDelete]

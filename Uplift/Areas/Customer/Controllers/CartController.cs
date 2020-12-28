@@ -96,14 +96,15 @@ namespace Uplift.Areas.Customer.Controllers
             {
                 var cartItems = JsonConvert.DeserializeObject<List<int>>(sessionCart);
 
+                vm.Services = new List<Service>();
                 foreach (var id in cartItems)
                 {
                     var service = await _unitOfWork.Service.Get(filter: s => s.Id == id, includes: "Frequency");
-                    CartSummaryVM.Services.Add(service);
+                    vm.Services.Add(service);
                 }
             }
 
-            if (!ModelState.IsValid) return View();
+            if (!ModelState.IsValid) return View(vm);
 
             var newOrder = new Order
             { 
@@ -113,11 +114,17 @@ namespace Uplift.Areas.Customer.Controllers
                 OrderedAt = DateTime.Now
             };
 
-            // _unitOfWork.Order.Add();
+            await _unitOfWork.Order.Add(newOrder);
+            await _unitOfWork.SaveAsync();
 
             HttpContext.Session.SetString(SD.SessionCart, JsonConvert.SerializeObject(new List<int>()));
 
             return RedirectToAction("OrderConfirmation", "Cart", new { });
+        }
+
+        public async Task<IActionResult> OrderConfirmation(CartSummaryVM vm)
+        {
+            return View(vm);
         }
     }
 }
