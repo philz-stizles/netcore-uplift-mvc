@@ -13,5 +13,6 @@ namespace Uplift.Models
         public DateTime OrderedAt { get; set; }
         public IEnumerable<Service> Items { get; set; }
         public Customer CustomerDetail { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

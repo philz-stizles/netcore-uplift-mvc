@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -54,13 +55,13 @@ namespace Uplift.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll() 
         {
-            return Json(new { data = await _unitOfWork.Order.GetAll(includes: "CustomerDetail") });
+            return Json(new { data = await _unitOfWork.Order.GetAll(includes: "CustomerDetail", orderBy: eo => eo.OrderByDescending(o => o.CreatedAt)) });
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllPending()
         {
-            return Json(new { data = await _unitOfWork.Order.GetAll() });
+            return Json(new { data = await _unitOfWork.Order.GetAll(includes: "CustomerDetail") });
         }
 
         [HttpGet]

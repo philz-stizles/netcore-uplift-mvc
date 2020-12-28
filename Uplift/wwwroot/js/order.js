@@ -13,7 +13,7 @@ function loadDataTable() {
         },
         "columns": [
             { "data": "customerDetail.name", "width": "25%" },
-            { "data": "Phone", "width": "20%" },
+            { "data": "customerDetail.phone", "width": "20%" },
             { "data": "totalItems", "width": "15%"},
             { "data": "totalPrice", "width": "15%" },
             {"data": "id", "render": function(id) {

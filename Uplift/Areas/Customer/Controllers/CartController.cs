@@ -109,8 +109,8 @@ namespace Uplift.Areas.Customer.Controllers
             var newOrder = new Order
             { 
                 CustomerDetail = vm.CustomerDetails,
-                totalItems = listOfItems.Count,
-                Items = listOfItems,
+                totalItems = vm.Services.Count,
+                Items = vm.Services,
                 OrderedAt = DateTime.Now
             };
 
