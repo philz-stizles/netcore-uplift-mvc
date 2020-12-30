@@ -57,7 +57,7 @@ namespace Uplift.DataAccess.Initializer
         };
 
         _userMgr.CreateAsync(admin, "P@ssw0rd").GetAwaiter().GetResult();
-        _userMgr.AddToRoleAsync(admin, SD.Admin).GetAwaiter().GetResult();
+        _userMgr.AddToRoleAsync(admin,SD.Admin).GetAwaiter().GetResult();
     }
 }
 }

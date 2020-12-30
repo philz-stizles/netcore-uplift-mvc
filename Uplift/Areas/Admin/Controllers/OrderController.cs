@@ -55,19 +55,25 @@ namespace Uplift.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll() 
         {
-            return Json(new { data = await _unitOfWork.Order.GetAll(includes: "CustomerDetail", orderBy: eo => eo.OrderByDescending(o => o.CreatedAt)) });
+            return Json(new { data = await _unitOfWork.Order.GetAll(includes: "CustomerDetail", orderBy: eo => eo.OrderBy(o => o.OrderedAt)) });
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllPending()
         {
-            return Json(new { data = await _unitOfWork.Order.GetAll(includes: "CustomerDetail") });
+            return Json(new { data = await _unitOfWork.Order.GetAll(filter: o => o.Status == OrderStatus.Pending, includes: "CustomerDetail") });
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllApproved()
         {
-            return Json(new { data = await _unitOfWork.Order.GetAll(includes: "CustomerDetail") });
+            return Json(new { data = await _unitOfWork.Order.GetAll(filter: o => o.Status == OrderStatus.Approved, includes: "CustomerDetail") });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllRejected()
+        {
+            return Json(new { data = await _unitOfWork.Order.GetAll(filter: o => o.Status == OrderStatus.Rejected, includes: "CustomerDetail") });
         }
 
         [HttpDelete]

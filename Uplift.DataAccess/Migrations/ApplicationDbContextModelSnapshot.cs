@@ -385,10 +385,14 @@ namespace Uplift.DataAccess.Migrations
                     b.Property<int?>("CustomerDetailId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("OrderReference")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("OrderedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("totalItems")
@@ -402,6 +406,21 @@ namespace Uplift.DataAccess.Migrations
                     b.HasIndex("CustomerDetailId");
 
                     b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Uplift.Models.OrderService", b =>
+                {
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ServiceId", "OrderId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderServices");
                 });
 
             modelBuilder.Entity("Uplift.Models.Service", b =>
@@ -441,9 +460,6 @@ namespace Uplift.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<double>("Price")
                         .HasColumnType("REAL");
 
@@ -452,8 +468,6 @@ namespace Uplift.DataAccess.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("FrequencyId");
-
-                    b.HasIndex("OrderId");
 
                     b.ToTable("Services");
                 });
@@ -536,6 +550,25 @@ namespace Uplift.DataAccess.Migrations
                     b.Navigation("CustomerDetail");
                 });
 
+            modelBuilder.Entity("Uplift.Models.OrderService", b =>
+                {
+                    b.HasOne("Uplift.Models.Order", "Order")
+                        .WithMany("OrderServices")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Uplift.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Service");
+                });
+
             modelBuilder.Entity("Uplift.Models.Service", b =>
                 {
                     b.HasOne("Uplift.Models.Category", "Category")
@@ -550,10 +583,6 @@ namespace Uplift.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Uplift.Models.Order", null)
-                        .WithMany("Items")
-                        .HasForeignKey("OrderId");
-
                     b.Navigation("Category");
 
                     b.Navigation("Frequency");
@@ -566,7 +595,7 @@ namespace Uplift.DataAccess.Migrations
 
             modelBuilder.Entity("Uplift.Models.Order", b =>
                 {
-                    b.Navigation("Items");
+                    b.Navigation("OrderServices");
                 });
 #pragma warning restore 612, 618
         }

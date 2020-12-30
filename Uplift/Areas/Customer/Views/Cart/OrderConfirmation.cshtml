@@ -1,9 +1,19 @@
-﻿@using Uplift.Models
-@model Uplift.Models.ViewModels.CartSummaryVM
-@using Microsoft.AspNetCore.Hosting
+﻿@model string
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Order Confirmation Page";
 }                   
 
-<h1 class="card mt-4">Order Confirmation</h1>
+<div class="row">
+    <div class="col-12 text-center">
+        <h1 class="card mt-4">Order Request Submitted</h1>
+        <img src="" width="" />
+    </div>
+    <div class="col-12" text-center style="">
+        <br />
+        Thank you for submitting a request online! <br />
+        We have recieved your request and our team will be calling you shortly
+        <br />
+        Your request number is: @Model
+    </div>
+</div>
      

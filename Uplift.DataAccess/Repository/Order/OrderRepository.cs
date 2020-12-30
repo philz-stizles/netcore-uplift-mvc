@@ -13,7 +13,7 @@ namespace Uplift.DataAccess.Repository
             _db = db;
         }
 
-        public async Task ChangeStatus(int id, string status)
+        public async Task ChangeStatus(int id, OrderStatus status)
         {
             var targetObj = await _db.Orders.FirstOrDefaultAsync(c => c.Id == id);
             targetObj.Status = status;

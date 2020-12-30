@@ -1,14 +1,46 @@
 ﻿@{
     ViewData["Title"] = "Home page";
+    var status = Context.Request.Query["status"];
+
+    var pending = "text-primary";
+    var approved = "text-primary";
+    var rejected = "text-primary";
+    var all = "text-primary";
+
+    if (status == "pending")
+    {
+        pending = "active text-white";
+    }
+    else if (status == "approved")
+    {
+        approved = "active text-white";
+    }
+    else if (status == "rejected")
+    {
+        rejected = "active text-white";
+    }
+    else {
+        all = "active text-white";
+    }
 }
+
+
 <div class="card mt-5 p-3">
     <div class="card-body">
-        <div class="row">
-            <div class="col-6"><h4 class="">Order List</h4></div>
-            <div class="col-6 d-flex flex-column justify-content-center align-items-end">
-                <a class="btn btn-primary btn-sm" asp-area="Admin" asp-controller="Order" asp-action="Upsert"><i class="fa fa-plus"></i> &nbsp; Create New</a>
+        <div class="d-flex justify-content-between mb-3">
+            <div class="p-2"><h4 class="text-primary">Order List</h4></div>
+            <div class="p-2">
+                <div class="list-group list-group-horizontal-sm">
+                    <a style="text-decoration: none" class="list-group-item @pending" asp-area="Admin" asp-controller="Order" asp-route-status="pending">Pending</a>
+                    <a class="list-group-item @approved" asp-area="Admin" asp-controller="Order" asp-action="Index" asp-route-status="approved">Approved</a>
+                    <a class="list-group-item @rejected" asp-area="Admin" asp-controller="Order" asp-action="Index" asp-route-status="rejected">Rejected</a>
+                    <a class="list-group-item @all" asp-area="Admin" asp-controller="Order" asp-action="Index" asp-route-status="all">All</a>
+                </div>
             </div>
         </div>
+
+        <br />
+
         <div class="row">
             <div class="col-12">
                 <table id="orderTable" class="table table-striped table-bordered" style="width: 100%">
@@ -18,6 +50,7 @@
                             <th scope="col">Phone</th>
                             <th scope="col">Total Items</th>
                             <th scope="col">Total Price</th>
+                            <th scope="col">Status</th>
                             <th scope="col"></th>
                         </tr>
                     </thead>

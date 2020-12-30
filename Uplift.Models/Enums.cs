@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace Uplift.Utility
+namespace Uplift.Models
 {
     public enum UserRole
     {
@@ -12,9 +12,11 @@ namespace Uplift.Utility
 
     public enum OrderStatus
     {
-        [Description("Admin")]
-        Admin = 1,
-        [Description("Manager")]
-        Manager
+        [Description("Pending")]
+        Pending,
+        [Description("Approved")]
+        Approved,
+        [Description("Rejected")]
+        Rejected
     }
 }

@@ -3,22 +3,23 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Uplift.DataAccess.Repository;
 using Uplift.Models;
-using Uplift.Utility;
 
 namespace Uplift.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize]
-    public class CategoryController: Controller
+    public class DashboardController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public CategoryController(IUnitOfWork unitOfWork)
+        public DashboardController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index() {
+        public async Task<IActionResult> Index() {
+            await _unitOfWork.Category.GetAll();
+
             return View();
         }
 
@@ -56,7 +57,6 @@ namespace Uplift.Areas.Admin.Controllers
         public async Task<IActionResult> GetAll() 
         {
             return Json(new { data = await _unitOfWork.Category.GetAll() });
-            // return Json(new { data = await _unitOfWork.SP_Call.ReturnList<Category>(SPROCEDURES.usp_GetAllCategories, null) });
         }
 
         [HttpDelete]

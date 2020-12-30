@@ -5,6 +5,6 @@ namespace Uplift.DataAccess.Repository
 {
     public interface IOrderRepository: IRepository<Order>
     {
-        Task ChangeStatus(int id, string status);
+        Task ChangeStatus(int id, OrderStatus status);
     }
 }

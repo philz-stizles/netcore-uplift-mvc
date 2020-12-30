@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -107,24 +108,36 @@ namespace Uplift.Areas.Customer.Controllers
             if (!ModelState.IsValid) return View(vm);
 
             var newOrder = new Order
-            { 
+            {
+                OrderReference = Guid.NewGuid().ToString().Substring(0, 7),
+                Status = OrderStatus.Pending,
                 CustomerDetail = vm.CustomerDetails,
                 totalItems = vm.Services.Count,
-                Items = vm.Services,
+                totalPrice = vm.Services.Sum(s => s.Price),
+                OrderServices = new List<OrderService>(),
                 OrderedAt = DateTime.Now
             };
-
             await _unitOfWork.Order.Add(newOrder);
+
+            foreach (var item in vm.Services)
+            {
+                newOrder.OrderServices.Add(new OrderService
+                {
+                    Order = newOrder,
+                    Service = item
+                });
+            }
+            
             await _unitOfWork.SaveAsync();
 
             HttpContext.Session.SetString(SD.SessionCart, JsonConvert.SerializeObject(new List<int>()));
 
-            return RedirectToAction("OrderConfirmation", "Cart", new { });
+            return RedirectToAction("OrderConfirmation", "Cart", new { OrderReference = newOrder.Id});
         }
 
-        public async Task<IActionResult> OrderConfirmation(CartSummaryVM vm)
+        public IActionResult OrderConfirmation(string orderReference)
         {
-            return View(vm);
+            return View(orderReference);
         }
     }
 }

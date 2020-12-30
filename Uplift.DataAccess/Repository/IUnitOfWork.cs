@@ -10,6 +10,7 @@ namespace Uplift.DataAccess.Repository
         IServiceRepository Service { get; }
         IUserRepository User { get; }
         IOrderRepository Order { get; }
+        ISP_Call SP_Call { get; }
         Task SaveAsync();
     }
 }
